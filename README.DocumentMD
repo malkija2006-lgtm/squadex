@@ -1,0 +1,12 @@
+# D-mealz — Eat. Share. Care.
+
+Campus food-waste app. Students vote on next week's menu; the dining admin
+records leftovers and alerts orphanages, NGOs and cattle farms; partners
+accept pickups; donors and institutions can message in.
+
+    d-mealz-project/
+      frontend/   static site (HTML + CSS + JS + images)
+      backend/    Supabase schema (Postgres + Realtime)
+
+Quick start: run `backend/supabase/schema.sql` in a new Supabase project,
+paste the URL and anon key into `frontend/js/config.js`, then host `frontend/`.

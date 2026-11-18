@@ -1,0 +1,49 @@
+# D-mealz backend (Supabase)
+
+The backend is a managed Supabase project: Postgres + Realtime. There is no
+server code to deploy.
+
+```
+backend/
+  supabase/schema.sql   <- run once in the Supabase SQL Editor
+```
+
+## What schema.sql creates
+| Object | Purpose |
+|---|---|
+| `public.records (coll, id, data jsonb, updated_at)` | One table holding every shared record. `coll` is the collection, `id` the record key, `data` the JSON. |
+| `records_coll_ok` check | Only the app's 15 collections are accepted: sent, fb, msgs, notes, dmsg, conf, chat, reqs, att, ov, pick, prof, acc, votes, vw |
+| `records_size_ok` check | Rejects any record over 200 KB |
+| `touch_updated_at` trigger | Keeps `updated_at` current |
+| RLS policies | Allow the browser (anon key) to select, insert, update, delete |
+| Realtime publication | Pushes changes to every open device |
+
+## Setup
+1. https://supabase.com -> New project.
+2. SQL Editor -> New query -> paste `supabase/schema.sql` -> Run.
+3. Project Settings -> API: copy **Project URL** and **anon public key**.
+4. Put them in `frontend/js/config.js`.
+
+## Collections (what each stores)
+| coll | Contents |
+|---|---|
+| votes | Weekly menu votes, one per student per meal slot |
+| sent | Surplus-food alerts and partner accept/decline replies |
+| fb | Student feedback and ratings |
+| msgs, dmsg | Mess / institution / donor messages |
+| notes | Menu-change notifications |
+| conf | Pickup confirmations |
+| chat | Role-to-role chat |
+| reqs, pick | Monthly special-menu requests and the chosen item |
+| att | Attendance counts |
+| ov | Dining-admin menu overrides |
+| prof | User profiles |
+| acc | Account records (salt + password hash) |
+| vw | Voting window (open/close time) |
+
+## Security
+The app signs people in itself and talks to Supabase with the public anon
+key, so the RLS policies are open by design. Anyone holding the site and key
+can read or write every record, including `acc`. Use for demos and pilots
+only. To harden: adopt Supabase Auth, add a `user_id` column, and rewrite
+the policies with `auth.uid()`; keep `acc` and `prof` owner-only.
